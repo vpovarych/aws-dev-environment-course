@@ -52,6 +52,19 @@ resource "aws_iam_role" "mypython_lambda_role" {
     ]
 }
 EOF
+    inline_policy { # to fix Error: error creating Lambda Event Source Mapping (arn:aws:sqs:us-east-1:1111:my-main-queue): InvalidParameterValueException: The provided execution role does not have permissions to call ReceiveMessage on SQS
+        name = "SQSMessages" 
+        policy = jsonencode({ 
+            Version = "2012-10-17" 
+            Statement = [ 
+                { 
+                    Effect = "Allow" 
+                    Action = ["sqs:*"] 
+                    Resource = "*" 
+                }
+            ]    
+        }) 
+    }       
 }
 
 resource "aws_sqs_queue" "main_queue" {
